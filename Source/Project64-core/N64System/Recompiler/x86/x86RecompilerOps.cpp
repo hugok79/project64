@@ -2961,11 +2961,11 @@ void CX86RecompilerOps::LB_KnownAddress(const asmjit::x86::Gp & Reg, uint32_t VA
         {
             if (SignExtend)
             {
-                m_Assembler.MoveSxVariableToX86regByte(Reg, (PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 3)", PAddr).c_str());
+                m_Assembler.MoveSxVariableToX86regByte(Reg, (PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 3)", PAddr).c_str());
             }
             else
             {
-                m_Assembler.MoveZxVariableToX86regByte(Reg, (PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 3)", PAddr).c_str());
+                m_Assembler.MoveZxVariableToX86regByte(Reg, (PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 3)", PAddr).c_str());
             }
         }
         else
@@ -3078,11 +3078,11 @@ void CX86RecompilerOps::LH_KnownAddress(const asmjit::x86::Gp & Reg, uint32_t VA
         {
             if (SignExtend)
             {
-                m_Assembler.MoveSxVariableToX86regHalf(Reg, (PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 2)", PAddr).c_str());
+                m_Assembler.MoveSxVariableToX86regHalf(Reg, (PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 2)", PAddr).c_str());
             }
             else
             {
-                m_Assembler.MoveZxVariableToX86regHalf(Reg, (PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 2)", PAddr).c_str());
+                m_Assembler.MoveZxVariableToX86regHalf(Reg, (PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 2)", PAddr).c_str());
             }
         }
         else
@@ -9345,7 +9345,7 @@ void CX86RecompilerOps::UpdateSyncCPU(CRegInfo & RegSet, uint32_t Cycles)
     m_CodeBlock.Log("");
     m_CodeBlock.Log("      // Updating sync CPU");
     RegSet.BeforeCallDirect();
-    m_Assembler.PushImm32(stdstr_f("%d", Cycles).c_str(), Cycles);
+    m_Assembler.push(Cycles);
     m_Assembler.CallThis((uint32_t)g_System, AddressOf(&CN64System::UpdateSyncCPU), "CN64System::UpdateSyncCPU", 8);
     RegSet.AfterCallDirect();
 }
@@ -10370,7 +10370,7 @@ void CX86RecompilerOps::SB_Const(uint32_t Value, uint32_t VAddr)
         }
         else if (PAddr < g_MMU->RdramSize())
         {
-            m_Assembler.MoveConstByteToVariable((PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 3)", PAddr).c_str(), (uint8_t)Value);
+            m_Assembler.MoveConstByteToVariable((PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 3)", PAddr).c_str(), (uint8_t)Value);
         }
         break;
     case 0x04000000:
@@ -10448,7 +10448,7 @@ void CX86RecompilerOps::SB_Register(const asmjit::x86::Gp & Reg, uint32_t VAddr)
         }
         else if (PAddr < g_MMU->RdramSize())
         {
-            m_Assembler.MoveX86regByteToVariable((PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 3)", PAddr).c_str(), Reg);
+            m_Assembler.MoveX86regByteToVariable((PAddr ^ 3) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 3)", PAddr).c_str(), Reg);
         }
         break;
     default:
@@ -10498,7 +10498,7 @@ void CX86RecompilerOps::SH_Const(uint32_t Value, uint32_t VAddr)
         }
         else if (PAddr < g_MMU->RdramSize())
         {
-            m_Assembler.MoveConstHalfToVariable((PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 2)", PAddr).c_str(), (uint16_t)Value);
+            m_Assembler.MoveConstHalfToVariable((PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 2)", PAddr).c_str(), (uint16_t)Value);
         }
         break;
     default:
@@ -10551,7 +10551,7 @@ void CX86RecompilerOps::SH_Register(const asmjit::x86::Gp & Reg, uint32_t VAddr)
                 }
                 else if (PAddr < g_MMU->RdramSize())
                 {
-                    m_Assembler.MoveX86regHalfToVariable((PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (%X ^ 2)", PAddr).c_str(), Reg);
+                    m_Assembler.MoveX86regHalfToVariable((PAddr ^ 2) + g_MMU->Rdram(), stdstr_f("RDRAM + (0x%X ^ 2)", PAddr).c_str(), Reg);
                 }
                 break;
             default:
@@ -10613,7 +10613,7 @@ void CX86RecompilerOps::SW_Const(uint32_t Value, uint32_t VAddr)
         }
         else if (PAddr < g_MMU->RdramSize())
         {
-            m_Assembler.MoveConstToVariable(PAddr + g_MMU->Rdram(), stdstr_f("RDRAM + %X", PAddr).c_str(), Value);
+            m_Assembler.MoveConstToVariable(PAddr + g_MMU->Rdram(), stdstr_f("RDRAM + 0x%X", PAddr).c_str(), Value);
         }
         break;
     case 0x03F00000:
@@ -11041,7 +11041,7 @@ void CX86RecompilerOps::SW_Register(const asmjit::x86::Gp & Reg, uint32_t VAddr)
         }
         else if (PAddr < g_MMU->RdramSize())
         {
-            m_Assembler.MoveX86regToVariable(PAddr + g_MMU->Rdram(), stdstr_f("RDRAM + %X", PAddr).c_str(), Reg);
+            m_Assembler.MoveX86regToVariable(PAddr + g_MMU->Rdram(), stdstr_f("RDRAM + 0x%X", PAddr).c_str(), Reg);
         }
         break;
     case 0x04000000:

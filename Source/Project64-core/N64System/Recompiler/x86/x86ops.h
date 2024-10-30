@@ -144,15 +144,21 @@ private:
 
     static x86Reg RegValue(const asmjit::x86::Gp & Reg);
     asmjit::Error _log(const char * data, size_t size) noexcept;
-    void AddSymbol(const char * SymbolKey, const char * SymbolValue);
-    void RemoveSymbol(const char * SymbolKey);
-    std::string VariableSymbol(void * Variable) const;
+    void AddLabelSymbol(const asmjit::Label & Label, const char * Symbol);
+    void AddNumberSymbol(uint32_t Value, const char * Symbol);
 
     static void BreakPointNotification(const char * FileName, int32_t LineNumber);
 
-    typedef std::map<std::string, std::string> SymbolMap;
+    typedef struct
+    {
+        std::string Symbol;
+        uint32_t Count;
+    } NumberSymbol;
 
-    SymbolMap m_Symbols;
+    typedef std::map<uint32_t, NumberSymbol> NumberSymbolMap;
+
+    NumberSymbolMap m_LabelSymbols;
+    NumberSymbolMap m_NumberSymbols;
     CCodeBlock & m_CodeBlock;
 };
 
