@@ -823,14 +823,9 @@ asmjit::Error CX86Ops::_log(const char * data, size_t size) noexcept
     if (m_NumberSymbols.size() > 0 && Pos != std::string::npos)
     {
         uint32_t Value = 0;
-        if (AsmjitLog[Pos] == '0' && (AsmjitLog[Pos + 1] == 'x' || AsmjitLog[Pos + 1] == 'X'))
-        {
-            Pos += 2;
-        }
-
         for (int i = 0; i < 8; i++)
         {
-            char c = AsmjitLog[Pos + i];
+            char c = AsmjitLog[Pos + 2 + i];
             if (c >= '0' && c <= '9')
             {
                 Value = (Value << 4) | (c - '0');
