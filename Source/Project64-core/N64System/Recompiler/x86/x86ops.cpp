@@ -862,10 +862,23 @@ asmjit::Error CX86Ops::_log(const char * data, size_t size) noexcept
     Pos = AsmjitLog.find("L");
     if (m_LabelSymbols.size() > 0 && Pos != std::string::npos)
     {
-        NumberSymbolMap::iterator itr = m_LabelSymbols.find(std::stoul(&AsmjitLog[Pos + 1], nullptr, 10));
+        size_t len = AsmjitLog.length();
+        uint32_t Value = 0;
+        for (int i = 0; i < 8 && (Pos + 1 + i) < len; i++)
+        {
+            char c = AsmjitLog[Pos + 1 + i];
+            if (c >= '0' && c <= '9')
+            {
+                Value = (Value << 4) | (c - '0');
+            }
+            else
+            {
+                break;
+            }
+        }
+        NumberSymbolMap::iterator itr = m_LabelSymbols.find(Value);
         if (itr != m_LabelSymbols.end())
         {
-
             std::string::size_type endPos = Pos + 1;
             for (std::string::size_type LenSize = AsmjitLog.length(); (endPos < LenSize && isdigit((unsigned char)AsmjitLog[endPos])); endPos++)
             {
@@ -892,7 +905,7 @@ void CX86Ops::AddLabelSymbol(const asmjit::Label & Label, const char * Symbol)
     }
     else
     {
-        m_LabelSymbols.emplace(std::make_pair(Label.id(), NumberSymbol{Symbol, 1}));
+        m_LabelSymbols.emplace(std::make_pair(Label.id(), NumberSymbol{Symbol, 2}));
     }
 }
 
