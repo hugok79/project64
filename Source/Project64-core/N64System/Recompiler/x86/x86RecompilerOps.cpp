@@ -2321,8 +2321,10 @@ void CX86RecompilerOps::JAL()
 
             uint64_t TargetPC = (m_CompilePC & 0xFFFFFFFFF0000000) + (m_Opcode.target << 2);
             bool bCheck = TargetPC <= m_CompilePC;
-            UpdateCounters(m_RegWorkingSet, bCheck, true);
-
+            if (bCheck)
+            {
+                UpdateCounters(m_RegWorkingSet, bCheck, true);
+            }
             CompileExit((uint64_t)-1, (uint64_t)-1, m_RegWorkingSet, bCheck ? ExitReason_Normal : ExitReason_NormalNoSysCheck, true, nullptr);
         }
         m_PipelineStage = PIPELINE_STAGE_END_BLOCK;
@@ -9526,7 +9528,7 @@ void CX86RecompilerOps::CompileExit(uint64_t JumpPC, uint64_t TargetPC, CRegInfo
     }
     else
     {
-        UpdateCounters(ExitRegSet, false, reason == ExitReason_Normal);
+        UpdateCounters(ExitRegSet, false, reason == ExitReason_Normal, reason != ExitReason_Normal);
     }
 
     bool InDelaySlot = m_PipelineStage == PIPELINE_STAGE_JUMP || m_PipelineStage == PIPELINE_STAGE_DELAY_SLOT;
