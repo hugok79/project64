@@ -901,7 +901,14 @@ void CX86Ops::AddLabelSymbol(const asmjit::Label & Label, const char * Symbol)
     NumberSymbolMap::iterator itr = m_LabelSymbols.find(Label.id());
     if (itr != m_LabelSymbols.end())
     {
-        __debugbreak();
+        if (strcmp(itr->second.Symbol.c_str(), Symbol) == 0)
+        {
+            itr->second.Count += 2;
+        }
+        else
+        {
+            __debugbreak();
+        }
     }
     else
     {
