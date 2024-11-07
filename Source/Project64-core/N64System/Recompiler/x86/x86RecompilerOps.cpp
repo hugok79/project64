@@ -4524,7 +4524,6 @@ void CX86RecompilerOps::SPECIAL_JR()
         }
         else
         {
-            UpdateCounters(m_RegWorkingSet, true, true);
             if (m_RegWorkingSet.IsConst(m_Opcode.rs))
             {
                 m_Assembler.MoveConstToVariable(&m_Reg.m_PROGRAM_COUNTER, "PROGRAM_COUNTER", m_RegWorkingSet.GetMipsRegLo(m_Opcode.rs));
@@ -4537,6 +4536,7 @@ void CX86RecompilerOps::SPECIAL_JR()
             {
                 m_Assembler.MoveX86regToVariable(&m_Reg.m_PROGRAM_COUNTER, "PROGRAM_COUNTER", m_RegWorkingSet.Map_TempReg(x86Reg_Unknown, m_Opcode.rs, false, false));
             }
+            UpdateCounters(m_RegWorkingSet, true, true, false);
             CompileExit((uint64_t)-1, (uint64_t)-1, m_RegWorkingSet, ExitReason_CheckPCAlignment, true, nullptr);
             if (m_Section->m_JumpSection)
             {
@@ -9538,7 +9538,7 @@ void CX86RecompilerOps::CompileExit(uint64_t JumpPC, uint64_t TargetPC, CRegInfo
     case ExitReason_CheckPCAlignment:
     case ExitReason_NormalNoSysCheck:
         ExitRegSet.SetBlockCycleCount(0);
-        if (reason == ExitReason_Normal && (TargetPC == (uint64_t)-1 || TargetPC <= JumpPC))
+        if ((reason == ExitReason_Normal || reason == ExitReason_CheckPCAlignment) && (TargetPC == (uint64_t)-1 || TargetPC <= JumpPC))
         {
             CompileSystemCheck((uint32_t)-1, ExitRegSet);
         }
