@@ -921,14 +921,7 @@ void CX86Ops::AddNumberSymbol(uint32_t Value, const char * Symbol)
     NumberSymbolMap::iterator itr = m_NumberSymbols.find(Value);
     if (itr != m_NumberSymbols.end())
     {
-        if (strcmp(itr->second.Symbol.c_str(), Symbol) == 0)
-        {
-            itr->second.Count += 1;
-        }
-        else
-        {
-            __debugbreak();
-        }
+        itr->second.Count += 1;
     }
     else
     {

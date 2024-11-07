@@ -25,6 +25,11 @@ const uint64_t & R4300iInstruction::Address() const
     return m_Address;
 }
 
+const uint32_t & R4300iInstruction::Address32() const
+{
+    return m_Address32[0];
+}
+
 const R4300iOpcode & R4300iInstruction::Opcode() const
 {
     return m_Instruction;
